@@ -1,0 +1,29 @@
+When system started:
+	ready|{getVcc()}{line break}
+
+when battery low:
+	warning|battery
+
+when object close:
+	warning|close
+
+commands:
+	<getdist:0>
+		returns reading from ultrasonic sensor
+		ok|{distance in centimeters}
+
+	<campos:{0-180}>
+		returns the number you gave it
+		ok|{0-180}
+
+	<dir:{0-4}>
+		0 - stop
+		1 - forward
+		2 - right
+		3 - backward
+		4 - left
+		returns the number you gave it
+		ok|{0-4}
+
+	<bat:0>
+		returns getVcc() reading of the battery
