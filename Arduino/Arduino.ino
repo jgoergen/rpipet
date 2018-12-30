@@ -156,15 +156,25 @@ void loop() {
 
 void processSerialCommand(char* command, char* param) {
 
-  Serial.println(command);
-
   // commands should be in the format "<COMMAND:PARAMER>"
 
   if (strcmp(command, "getdist") == 0) {
 
     // read the ultrasonic range finder
+
+    int dist = 9999;
+    int measure = 9999;
+    
+    for (int i = 0; i < 10; i++) {
+
+      measure = readUltrasonicSensorCM();
+      
+      if (measure < dist)
+        dist = measure;
+    }
+    
     Serial.print("ok|");
-    Serial.println(readUltrasonicSensorCM());
+    Serial.println(dist);
   
   } else if (strcmp(command, "campos") == 0) {
 
