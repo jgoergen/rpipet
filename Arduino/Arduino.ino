@@ -4,10 +4,10 @@ ADC_MODE(ADC_VCC);
 
 // PIN DEFINITIONS //////////////////////////////////////////////////////////////////////
 
-#define RIGHT_MOTOR_SPEED_PIN   5
-#define RIGHT_MOTOR_DIR_PIN     0
-#define LEFT_MOTOR_SPEED_PIN    4
-#define LEFT_MOTOR_DIR_PIN      2
+#define TURN_MOTOR_SPEED_PIN   5
+#define TURN_MOTOR_DIR_PIN     0
+#define DRIVE_MOTOR_SPEED_PIN    4
+#define DRIVE_MOTOR_DIR_PIN      2
 #define ECHO_PIN                12
 #define TRIGGER_PIN             13
 #define CAM_SERVO_PIN           15
@@ -48,10 +48,10 @@ void setup() {
   
   Serial.begin(115200);
 
-  pinMode(RIGHT_MOTOR_SPEED_PIN, OUTPUT);
-  pinMode(RIGHT_MOTOR_DIR_PIN, OUTPUT);
-  pinMode(LEFT_MOTOR_SPEED_PIN, OUTPUT);
-  pinMode(LEFT_MOTOR_DIR_PIN, OUTPUT);
+  pinMode(TURN_MOTOR_SPEED_PIN, OUTPUT);
+  pinMode(TURN_MOTOR_DIR_PIN, OUTPUT);
+  pinMode(DRIVE_MOTOR_SPEED_PIN, OUTPUT);
+  pinMode(DRIVE_MOTOR_DIR_PIN, OUTPUT);
   pinMode(TRIGGER_PIN, OUTPUT);
   pinMode(ECHO_PIN, INPUT);
 
@@ -116,40 +116,50 @@ void loop() {
     if (movementDirection == 1 ) {
 
       // Forward
-      digitalWrite(RIGHT_MOTOR_DIR_PIN, HIGH);
-      digitalWrite(LEFT_MOTOR_DIR_PIN, LOW);
-      digitalWrite(RIGHT_MOTOR_SPEED_PIN, HIGH);
-      digitalWrite(LEFT_MOTOR_SPEED_PIN, HIGH);
+      digitalWrite(DRIVE_MOTOR_DIR_PIN, LOW);
+      digitalWrite(DRIVE_MOTOR_SPEED_PIN, HIGH);
+      camServoTargetPosition = 90;
     
     } else if(movementDirection == 2) {
 
-      // Right
-      digitalWrite(RIGHT_MOTOR_DIR_PIN, HIGH);
-      digitalWrite(LEFT_MOTOR_DIR_PIN, HIGH);
-      digitalWrite(RIGHT_MOTOR_SPEED_PIN, HIGH);
-      digitalWrite(LEFT_MOTOR_SPEED_PIN, HIGH);
-    
+      // Reverse
+      digitalWrite(DRIVE_MOTOR_DIR_PIN, HIGH);
+      digitalWrite(DRIVE_MOTOR_SPEED_PIN, HIGH);
+      camServoTargetPosition = 90;
+          
     } else if(movementDirection == 3) {
 
-      // Reverse
-      digitalWrite(RIGHT_MOTOR_DIR_PIN, LOW);
-      digitalWrite(LEFT_MOTOR_DIR_PIN, HIGH);
-      digitalWrite(RIGHT_MOTOR_SPEED_PIN, HIGH);
-      digitalWrite(LEFT_MOTOR_SPEED_PIN, HIGH);
-      
+      // STOP
+      digitalWrite(DRIVE_MOTOR_DIR_PIN, HIGH);
+      digitalWrite(DRIVE_MOTOR_SPEED_PIN, LOW);
+    
     } else if(movementDirection == 4) {
 
+      // Right
+      digitalWrite(TURN_MOTOR_DIR_PIN, HIGH);
+      digitalWrite(TURN_MOTOR_SPEED_PIN, HIGH);
+      camServoTargetPosition = 50;
+      
+    } else if(movementDirection == 5) {
+
       // Left
-      digitalWrite(RIGHT_MOTOR_DIR_PIN, LOW);
-      digitalWrite(LEFT_MOTOR_DIR_PIN, LOW);
-      digitalWrite(RIGHT_MOTOR_SPEED_PIN, HIGH);
-      digitalWrite(LEFT_MOTOR_SPEED_PIN, HIGH);
+      digitalWrite(TURN_MOTOR_DIR_PIN, LOW);
+      digitalWrite(TURN_MOTOR_SPEED_PIN, HIGH);
+      camServoTargetPosition = 140;
+    
+    } else if(movementDirection == 6) {
+
+      // Center
+      digitalWrite(TURN_MOTOR_DIR_PIN, LOW);
+      digitalWrite(TURN_MOTOR_SPEED_PIN, LOW);
+      camServoTargetPosition = 90;
     
     } else {
 
       // Stop
-      digitalWrite(RIGHT_MOTOR_SPEED_PIN, LOW);
-      digitalWrite(LEFT_MOTOR_SPEED_PIN, LOW);
+      digitalWrite(TURN_MOTOR_SPEED_PIN, LOW);
+      digitalWrite(DRIVE_MOTOR_SPEED_PIN, LOW);
+      camServoTargetPosition = 90;
     }
   }
 }
@@ -165,7 +175,7 @@ void processSerialCommand(char* command, char* param) {
     int dist = 9999;
     int measure = 9999;
     
-    for (int i = 0; i < 10; i++) {
+    for (int i = 0; i < 4; i++) {
 
       measure = readUltrasonicSensorCM();
       
@@ -188,14 +198,15 @@ void processSerialCommand(char* command, char* param) {
 
     // 0 == stop
     // 1 == forward
-    // 2 == right
-    // 3 == backward
-    // 4 == left
+    // 2 == backward
+    // 3 == stop
+    // 4 == right
+    // 5 == left
+    // 6 == center
     // change the vehicle movement
     movementDirection = atoi(param);
     Serial.print("ok|");
     Serial.println(movementDirection);
-    camServoTargetPosition = 90;
 
   } else if (strcmp(command, "bat") == 0) {
 
@@ -280,4 +291,3 @@ uint32_t readBatteryVoltage() {
 
   return ESP.getVcc();
 }
-

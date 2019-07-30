@@ -18,31 +18,72 @@ def readlineCR():
 def scanFull():
     global port
 
-    deg = 0
+    deg = 50
     degChange = 10
     
     print("Scan Full Starting")
 
     port.write("<campos:" + str(deg) + ">\r\n")
-    time.sleep(6)
+    time.sleep(2)
 
-    while deg < 190:
+    while deg < 130:
         port.write("<campos:" + str(deg) + ">\r\n")
+        readlineCR()
+        readlineCR()
         port.write("<getdist:0>\r\n")
-        print(str(deg) + ": " + readlineCR())
+        print("Distance: " + str(deg) + " Degs: " + readlineCR())
         deg += degChange
-        time.sleep(0.6)
+        time.sleep(1)
 
     print("Scan Full Complete")
 
 while True:
 
+    print("Directional Tests Starting")
+
+    print("Forward")
+    port.write("<dir:1>\r\n")
+    print(readlineCR())
+    time.sleep(1)
+    port.write("<dir:3>\r\n")
+    print(readlineCR())
+    time.sleep(1)
+
+    print("Backward")
+    port.write("<dir:2>\r\n")
+    print(readlineCR())
+    time.sleep(1)
+    port.write("<dir:3>\r\n")
+    print(readlineCR())
+    time.sleep(1)
+
+    print("Right")
+    port.write("<dir:4>\r\n")
+    print(readlineCR())
+    port.write("<dir:1>\r\n")
+    print(readlineCR())
+    time.sleep(1)
+    port.write("<dir:3>\r\n")
+    print(readlineCR())
+    time.sleep(1)
+
+    print("Left")
+    port.write("<dir:5>\r\n")
+    print(readlineCR())
+    port.write("<dir:1>\r\n")
+    print(readlineCR())
+    time.sleep(1)
+    port.write("<dir:3>\r\n")
+    print(readlineCR())
+    time.sleep(1)
+
     if first == True:
         scanFull()
         first = False
-    
+
     rcv = readlineCR()
     print(repr(rcv))
+    
 
 
 # When system started:
