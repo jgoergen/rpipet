@@ -4,10 +4,10 @@ ADC_MODE(ADC_VCC);
 
 // PIN DEFINITIONS //////////////////////////////////////////////////////////////////////
 
-#define TURN_MOTOR_SPEED_PIN   5
-#define TURN_MOTOR_DIR_PIN     0
-#define DRIVE_MOTOR_SPEED_PIN    4
-#define DRIVE_MOTOR_DIR_PIN      2
+#define TURN_MOTOR_SPEED_PIN    5
+#define TURN_MOTOR_DIR_PIN      0
+#define DRIVE_MOTOR_SPEED_PIN   4
+#define DRIVE_MOTOR_DIR_PIN     2
 #define ECHO_PIN                12
 #define TRIGGER_PIN             13
 #define CAM_SERVO_PIN           15
@@ -85,12 +85,12 @@ void loop() {
 
     if (camServoTargetPosition < camServoPosition) {
 
-      camServoPosition --;
+      camServoPosition -= floor((camServoPosition - camServoTargetPosition) / 5.0f);
       camTilt.write(camServoPosition);
     
     } else if (camServoTargetPosition > camServoPosition) {
       
-      camServoPosition ++;
+      camServoPosition += floor((camServoTargetPosition - camServoPosition) / 5.0f);
       camTilt.write(camServoPosition);
     }
   }
@@ -115,43 +115,62 @@ void loop() {
       
     if (movementDirection == 1 ) {
 
-      // Forward
-      digitalWrite(DRIVE_MOTOR_DIR_PIN, LOW);
+      // Center steering
+      digitalWrite(TURN_MOTOR_DIR_PIN, LOW);
+      digitalWrite(TURN_MOTOR_SPEED_PIN, LOW);
+      // Strait Forward
+      digitalWrite(DRIVE_MOTOR_DIR_PIN, HIGH);
       digitalWrite(DRIVE_MOTOR_SPEED_PIN, HIGH);
       camServoTargetPosition = 90;
     
     } else if(movementDirection == 2) {
 
-      // Reverse
-      digitalWrite(DRIVE_MOTOR_DIR_PIN, HIGH);
+      // Center steering
+      digitalWrite(TURN_MOTOR_DIR_PIN, LOW);
+      digitalWrite(TURN_MOTOR_SPEED_PIN, LOW);
+      // Strait Backwards
+      digitalWrite(DRIVE_MOTOR_DIR_PIN, LOW);
       digitalWrite(DRIVE_MOTOR_SPEED_PIN, HIGH);
       camServoTargetPosition = 90;
           
     } else if(movementDirection == 3) {
 
-      // STOP
-      digitalWrite(DRIVE_MOTOR_DIR_PIN, HIGH);
-      digitalWrite(DRIVE_MOTOR_SPEED_PIN, LOW);
-    
-    } else if(movementDirection == 4) {
-
       // Right
       digitalWrite(TURN_MOTOR_DIR_PIN, HIGH);
       digitalWrite(TURN_MOTOR_SPEED_PIN, HIGH);
+      // Forward
+      digitalWrite(DRIVE_MOTOR_DIR_PIN, HIGH);
+      digitalWrite(DRIVE_MOTOR_SPEED_PIN, HIGH);
       camServoTargetPosition = 50;
       
-    } else if(movementDirection == 5) {
+    } else if(movementDirection == 4) {
 
       // Left
       digitalWrite(TURN_MOTOR_DIR_PIN, LOW);
       digitalWrite(TURN_MOTOR_SPEED_PIN, HIGH);
+      // Forward
+      digitalWrite(DRIVE_MOTOR_DIR_PIN, HIGH);
+      digitalWrite(DRIVE_MOTOR_SPEED_PIN, HIGH);
       camServoTargetPosition = 140;
     
+    } else if(movementDirection == 5) {
+
+      // Right
+      digitalWrite(TURN_MOTOR_DIR_PIN, HIGH);
+      digitalWrite(TURN_MOTOR_SPEED_PIN, HIGH);
+      // Backwards
+      digitalWrite(DRIVE_MOTOR_DIR_PIN, LOW);
+      digitalWrite(DRIVE_MOTOR_SPEED_PIN, HIGH);
+      camServoTargetPosition = 90;
+
     } else if(movementDirection == 6) {
 
-      // Center
+      // Left
       digitalWrite(TURN_MOTOR_DIR_PIN, LOW);
-      digitalWrite(TURN_MOTOR_SPEED_PIN, LOW);
+      digitalWrite(TURN_MOTOR_SPEED_PIN, HIGH);
+      // Backwards
+      digitalWrite(DRIVE_MOTOR_DIR_PIN, LOW);
+      digitalWrite(DRIVE_MOTOR_SPEED_PIN, HIGH);
       camServoTargetPosition = 90;
     
     } else {
@@ -160,6 +179,9 @@ void loop() {
       digitalWrite(TURN_MOTOR_SPEED_PIN, LOW);
       digitalWrite(DRIVE_MOTOR_SPEED_PIN, LOW);
       camServoTargetPosition = 90;
+      // Center steering
+      digitalWrite(TURN_MOTOR_DIR_PIN, LOW);
+      digitalWrite(TURN_MOTOR_SPEED_PIN, LOW);
     }
   }
 }
